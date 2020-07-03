@@ -7,6 +7,7 @@ name = "pypi"
 flask = "*"
 line-bot-sdk = '*'
 boto3 = '*'
+gunicorn = '*'
 
 [dev-packages]
 
