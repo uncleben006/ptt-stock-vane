@@ -15,7 +15,7 @@ from linebot.models import (
     TextMessage
 )
 
-from config import line_bot_api, handler
+from config import handler
 
 app = Flask(__name__)
 
