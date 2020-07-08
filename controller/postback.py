@@ -38,18 +38,13 @@ def handle(event):
             r.mset( {'end_date':event.postback.params['date']} )
 
         if r.get( 'start_date' ) and r.get( 'end_date' ):
-            # 在這裡做爬蟲，回傳結果
+
+            # TODO: 依照時間區間回傳結果前後三名的公司
             line_bot_api.reply_message(
                 event.reply_token,
                 TextSendMessage(
                     text = '您查詢的時間區間\n'+ r.get( 'start_date' ).decode() +'：'+ r.get( 'end_date' ).decode(),
-                    quick_reply = QuickReply(
-                        items=[
-                            QuickReplyButton(action=DatetimePickerAction( label="起始時間", data="start_date", mode="date", initial=str(today), max=str(today), min=str(today - timedelta(days=30)) ) ),
-                            QuickReplyButton(action=DatetimePickerAction(label="結束時間", data="end_date", mode="date", initial=str(today), max=str(today), min=str(today - timedelta(days=30)))),
-                            QuickReplyButton(action=MessageAction(label="不查了", text="不查了")),
-                        ]
-                    )
+                    quick_reply=quick_reply.quick_reply
                 )
             )
             r.delete( 'end_date' )
