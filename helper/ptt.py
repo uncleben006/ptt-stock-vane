@@ -1,18 +1,16 @@
 import psycopg2
 import requests
 from bs4 import BeautifulSoup
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 import json
-import os
-
-database_url = os.getenv('DATABASE_URL')
+from config import database_url
 
 class crawlerPtt():
 
     def __init__(self, url, date_limit):
         # TODO: 台股字典目前為手動匯入，新上市公司有可能不會被判斷到，之後要做自動化
         # 載入台股字典，作為篩選以及分析留言依據
-        with open( '../data/company_dict.json', 'r' ) as read_file:
+        with open( 'data/company_dict.json', 'r' ) as read_file:
             self.dict_data = json.load( read_file )
 
         # 欲抓取的看板首頁
@@ -20,12 +18,12 @@ class crawlerPtt():
         # 儲存每個標題網址
         self.urlList = []
 
-        # 爬取今天之前的天數 ( date_range )
+        # 爬取今天之前的天數 ( date_limit )
         today = datetime.today()
-        self.crawl_start = today - timedelta( days = date_range )
+        self.crawl_start = today - timedelta( days = date_limit )
         self.crawl_start = self.crawl_start.strftime( "%Y-%m-%d" )
         # 把時間區間做成時間陣列
-        date_list = [(today - timedelta( days = x )).strftime( "%Y-%m-%d" ) for x in range( date_range )]
+        date_list = [(today - timedelta( days = x )).strftime( "%Y-%m-%d" ) for x in range( date_limit )]
 
         # 用 stock.json 初始化留言字典，字典格式如下
         # {
@@ -157,31 +155,3 @@ class crawlerPtt():
                             print(messages)
                             self.messageDict[date][referCompany].append( messages )
 
-
-# 實例化爬蟲 輸入爬取看板
-url = 'https://www.ptt.cc/bbs/Stock/index.html'
-
-date_range = 30
-stock = crawlerPtt(url,date_range)
-
-# 爬取完成
-print('OK!')
-print(stock.messageDict)
-
-insert_sql = "INSERT INTO company_command ( datetime, command ) VALUES"
-# insert_sql = "INSERT INTO company_command ( datetime, command ) VALUES ( '2020-07-08' , '{ \"1101\": [\"%(*$#{}\"], \"1102\": [], \"1103\": [], \"1104\": [] }' )"
-values = ''
-for date in stock.messageDict:
-    values = values + "( '" + date + "' , '" + json.dumps(stock.messageDict[date], ensure_ascii=False) + "' ),"
-values = values[:-1]
-insert_sql = insert_sql+values
-
-conn = psycopg2.connect( database_url, sslmode = 'require' )
-cursor = conn.cursor()
-
-cursor.execute( "DELETE FROM company_command" )
-cursor.execute( insert_sql )
-
-conn.commit()
-cursor.close()
-conn.close()

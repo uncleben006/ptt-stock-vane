@@ -1,6 +1,6 @@
 
 
-from controller import follow, postback, message
+from controller import follow, postback, message, cron
 from datetime import datetime, timedelta
 
 from flask import Flask, request, abort
@@ -24,6 +24,12 @@ def index_html():
     now = datetime.now()
     dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
     return '<h1>You have access the server successfully</h1><br>'+dt_string
+
+@app.route('/cron', methods=['GET'])
+def cron_job():
+    print('start a cron job.')
+    cron.job()
+    return '<h1>You have finished the cron job successfully</h1>'
 
 @app.route("/callback", methods=['POST'])
 def callback():
