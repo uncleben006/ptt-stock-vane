@@ -2,4 +2,7 @@ boto3
 gunicorn
 Flask==1.1.2
 line-bot-sdk==1.16.0
-redis==3.5.3
+redis
+psycopg2
+psycopg2-binar
+snownlp
