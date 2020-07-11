@@ -6,3 +6,4 @@ redis
 psycopg2
 psycopg2-binary
 snownlp
+bs4
