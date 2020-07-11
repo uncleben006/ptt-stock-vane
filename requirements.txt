@@ -4,5 +4,5 @@ Flask==1.1.2
 line-bot-sdk==1.16.0
 redis
 psycopg2
-psycopg2-binar
+psycopg2-binary
 snownlp
