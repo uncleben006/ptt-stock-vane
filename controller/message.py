@@ -12,7 +12,7 @@ def handle(event):
             event.reply_token,
             FlexSendMessage(
                 alt_text='指令一覽表',
-                contents=flex_message.command_list,
+                contents=flex_message.command_list(),
                 quick_reply=quick_reply.quick_reply
             )
         )
@@ -26,7 +26,7 @@ def handle(event):
         event.reply_token,
         FlexSendMessage(
             alt_text='Dummy message',
-            contents=flex_message.default_message,
+            contents=flex_message.default_message(),
             quick_reply=quick_reply.quick_reply
         )
     )

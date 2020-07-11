@@ -57,7 +57,7 @@ def update_user_context( name, data, profile ):
     cursor.close()
     conn.close()
 
-def upsert_company_command( delete_sql, insert_sql ):
+def upsert_company_comment( delete_sql, insert_sql ):
 
     conn = psycopg2.connect( database_url, sslmode = 'require' )
     cursor = conn.cursor()
@@ -68,3 +68,21 @@ def upsert_company_command( delete_sql, insert_sql ):
     conn.commit()
     cursor.close()
     conn.close()
+
+def get_company_comment():
+
+    conn = psycopg2.connect( database_url, sslmode = 'require' )
+    cursor = conn.cursor()
+
+    # sql = "SELECT * FROM company_comment WHERE datetime BETWEEN '2020-07-05' AND '2020-07-07'";
+    sql = "SELECT * FROM company_comment";
+    print(sql)
+
+    cursor.execute( sql )
+    result = cursor.fetchall()
+    # result = json.loads('"'+result[0]+'"')
+
+    cursor.close()
+    conn.close()
+
+    return result

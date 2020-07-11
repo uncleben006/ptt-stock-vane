@@ -1,9 +1,7 @@
-import psycopg2
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 import json
-from config import database_url
 
 class crawlerPtt():
 
@@ -114,7 +112,7 @@ class crawlerPtt():
                 print(e)
                 continue
 
-            print(self.urlList[num][0],self.urlList[num][1],self.urlList[num][2])
+            # print(self.urlList[num][0],self.urlList[num][1],self.urlList[num][2])
 
             # 如果 title 裡面有提及公司，則判斷該篇文章裡面所有的留言都指稱該公司
             referCompany = None
@@ -154,4 +152,3 @@ class crawlerPtt():
                         if referCompany:
                             print(messages)
                             self.messageDict[date][referCompany].append( messages )
-

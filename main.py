@@ -1,7 +1,7 @@
 
 
 from controller import follow, postback, message, cron
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from flask import Flask, request, abort
 
