@@ -17,7 +17,7 @@ class crawlerPtt():
         self.urlList = []
 
         # 爬取今天之前的天數 ( date_limit )
-        today = datetime.today()
+        today = datetime.today() + timedelta( days = 1 ) # 因為世界協調時間(UTC) 在 16:00 - 23:59 時是抓到昨天，date_list 會少一天
         self.crawl_start = today - timedelta( days = date_limit )
         self.crawl_start = self.crawl_start.strftime( "%Y-%m-%d" )
         # 把時間區間做成時間陣列
