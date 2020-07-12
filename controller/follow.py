@@ -14,7 +14,7 @@ def handle(event):
         event.reply_token,
         TextSendMessage(
             text = profile.display_name + ' 您好, 歡迎來到 PTT 股版風向儀，有什麼想知道的事情嗎？',
-            quick_reply = quick_reply.quick_reply
+            quick_reply = quick_reply.quick_reply()
         )
     )
 

@@ -2,9 +2,11 @@ from helper.ptt import calPttSents
 from helper.util import get_sorted_result
 from view import quick_reply
 from config import line_bot_api, redis_url
-from linebot.models import TextSendMessage, MessageAction, QuickReply, QuickReplyButton, DatetimePickerAction, PostbackAction
-from datetime import date, timedelta
+from linebot.models import TextSendMessage
+from datetime import date
 import redis
+
+from view.quick_reply import search_date
 
 
 def handle(event):
@@ -21,13 +23,7 @@ def handle(event):
             event.reply_token,
             TextSendMessage(
                 text='請輸入時間',
-                quick_reply=QuickReply(
-                    items=[
-                        QuickReplyButton(action=DatetimePickerAction( label="起始時間", data="start_date", mode="date", initial=str(today), max=str(today), min=str(today - timedelta(days=30)) ) ),
-                        QuickReplyButton(action=DatetimePickerAction(label="結束時間", data="end_date", mode="date", initial=str(today), max=str(today), min=str(today - timedelta(days=30)))),
-                        QuickReplyButton(action=MessageAction(label="不查了", text="不查了")),
-                    ]
-                )
+                quick_reply= search_date( today )
             )
         )
 
@@ -49,12 +45,7 @@ def handle(event):
                     text = '謝謝您的查詢，您查詢的時間區間為\n\n' +
                            r.get( 'start_date' ).decode() + '：' + r.get( 'end_date' ).decode() +
                            '\n\n查詢可能需要耗費幾秒鐘的時間，\n請記得點選 「查看結果」。',
-                    quick_reply = QuickReply(
-                        items = [
-                            QuickReplyButton( action = PostbackAction( label = "查看結果", data = user_id ) ),
-                            QuickReplyButton( action = MessageAction( label = "不看了", text = "不看了" ) ),
-                        ]
-                    )
+                    quick_reply = quick_reply.get_result( user_id )
                 )
             )
             # 依照時間區間計算股票版公司情緒並除存在 redis 方便用戶查詢
@@ -82,7 +73,7 @@ def handle(event):
                         dict_data[neg_name[0]][1] + '  好感度:' + str(neg_data[2][0]) + '  留言數：' + str(neg_data[2][1]) + '\n' +
                         dict_data[neg_name[1]][1] + '  好感度:' + str(neg_data[1][0]) + '  留言數：' + str(neg_data[1][1]) + '\n' +
                         dict_data[neg_name[2]][1] + '  好感度:' + str(neg_data[0][0]) + '  留言數：' + str(neg_data[0][1]) + '\n',
-                        quick_reply = quick_reply.quick_reply
+                        quick_reply = quick_reply.quick_reply()
                     ),
                     # TODO: 用小輪播顯示三個綠色好公司，三個紅色壞公司，若要查看公司留言，則導入 flask 網站
                     # 所以要額外做一個用來顯示留言的頁面
@@ -99,13 +90,6 @@ def handle(event):
                 event.reply_token,
                 TextSendMessage(
                     text = '可能還要再等幾秒鐘，搜尋一天大約1～2秒，如果搜尋30天約等30秒上下',
-                    quick_reply=QuickReply(
-                        items=[
-                            QuickReplyButton(action=PostbackAction( label="查看結果", data=user_id )),
-                            QuickReplyButton(action=MessageAction(label="不看了", text="不看了")),
-                        ]
-                    )
+                    quick_reply = quick_reply.get_result( user_id )
                 )
             )
-
-
