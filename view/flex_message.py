@@ -1,4 +1,6 @@
 
+from datetime import timedelta
+
 def default_message():
      return {
         "type": "bubble",
@@ -113,7 +115,7 @@ def default_message():
         }
     }
 
-def command_list():
+def command_list( today ):
     return {
       "type": "bubble",
       "size": "mega",
@@ -130,7 +132,7 @@ def command_list():
           },
           {
             "type": "text",
-            "text": "Updated: 2020-07-02",
+            "text": "Updated: 2020-07-12",
             "size": "xs",
             "color": "#e4f9ff",
             "margin": "sm"
@@ -153,7 +155,7 @@ def command_list():
                 "contents": [
                   {
                     "type": "text",
-                    "text": "說明：查詢特定公司時段內的評論",
+                    "text": "說明：查詢並分析特定公司時段內的留言情緒",
                     "margin": "md",
                     "size": "sm",
                     "color": "#555555",
@@ -172,7 +174,7 @@ def command_list():
                     "size": "sm",
                     "color": "#555555",
                     "flex": 0,
-                    "text": "台機電:2020-06-30:2020-07-30",
+                    "text": "台積電:"+ ( today - timedelta( days = 2 )).strftime( "%Y-%m-%d" ) +":"+ today.strftime( "%Y-%m-%d" ) +"",
                     "margin": "md"
                   },
                   {
@@ -180,15 +182,15 @@ def command_list():
                     "size": "sm",
                     "color": "#555555",
                     "flex": 0,
-                    "text": "2330:2020-06-30:2020-07-30",
+                    "text": "2330:"+ ( today - timedelta( days = 2 )).strftime( "%Y-%m-%d" ) +":"+ today.strftime( "%Y-%m-%d" ) +"",
                     "margin": "md"
                   },
                   {
                     "type": "button",
                     "action": {
                       "type": "message",
-                      "label": "查看公司評論",
-                      "text": "台機電:2020-06-30:2020-07-30"
+                      "label": "查看公司評價",
+                      "text": "台機電:"+ ( today - timedelta( days = 2 )).strftime( "%Y-%m-%d" ) +":"+ today.strftime( "%Y-%m-%d" ) +"",
                     },
                     "style": "secondary",
                     "margin": "md",
@@ -229,7 +231,7 @@ def command_list():
                     "size": "sm",
                     "color": "#555555",
                     "flex": 0,
-                    "text": "風向:2020-06-30:2020-07-30",
+                    "text": "風向:"+ ( today - timedelta( days = 2 )).strftime( "%Y-%m-%d" ) +":"+ today.strftime( "%Y-%m-%d" ) +"",
                     "margin": "md"
                   },
                   {
@@ -237,7 +239,7 @@ def command_list():
                     "action": {
                       "type": "message",
                       "label": "了解版內風向",
-                      "text": "風向:2020-06-30:2020-07-30"
+                      "text": "風向:"+ ( today - timedelta( days = 2 )).strftime( "%Y-%m-%d" ) +":"+ today.strftime( "%Y-%m-%d" ) +""
                     },
                     "style": "secondary",
                     "margin": "md",
@@ -278,7 +280,7 @@ def command_list():
                     "size": "sm",
                     "color": "#555555",
                     "flex": 0,
-                    "text": "Sunrisesky:2020-06-30:2020-07-30",
+                    "text": "Sunrisesky:"+ ( today - timedelta( days = 2 )).strftime( "%Y-%m-%d" ) +":"+ today.strftime( "%Y-%m-%d" ) +"",
                     "margin": "md"
                   },
                   {
@@ -286,7 +288,7 @@ def command_list():
                     "action": {
                       "type": "message",
                       "label": "查看作者評論",
-                      "text": "Sunrisesky:2020-06-30:2020-07-30"
+                      "text": "Sunrisesky:"+ ( today - timedelta( days = 2 )).strftime( "%Y-%m-%d" ) +":"+ today.strftime( "%Y-%m-%d" ) +""
                     },
                     "style": "secondary",
                     "margin": "md",
@@ -327,7 +329,7 @@ def command_list():
                     "size": "sm",
                     "color": "#555555",
                     "flex": 0,
-                    "text": "標的作者:2020-06-30:2020-07-30",
+                    "text": "標的作者:"+ ( today - timedelta( days = 2 )).strftime( "%Y-%m-%d" ) +":"+ today.strftime( "%Y-%m-%d" ) +"",
                     "margin": "md"
                   },
                   {
@@ -335,7 +337,7 @@ def command_list():
                     "action": {
                       "type": "message",
                       "label": "分析作者報酬率",
-                      "text": "標的作者:2020-06-30:2020-07-30"
+                      "text": "標的作者:"+ ( today - timedelta( days = 2 )).strftime( "%Y-%m-%d" ) +":"+ today.strftime( "%Y-%m-%d" ) +""
                     },
                     "style": "secondary",
                     "margin": "md",

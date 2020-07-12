@@ -2,6 +2,7 @@ from helper.ptt import calPttSents
 from view import quick_reply, flex_message
 from config import line_bot_api, redis_url
 from linebot.models import TextSendMessage, FlexSendMessage
+from datetime import date
 import re
 import redis
 import json
@@ -9,17 +10,18 @@ import json
 def handle(event):
     user_id = event.source.user_id
     profile = line_bot_api.get_profile( user_id )
+    today = date.today()
 
     if event.message.text == '指令':
         return line_bot_api.reply_message(
             event.reply_token,
             FlexSendMessage(
                 alt_text='指令一覽表',
-                contents=flex_message.command_list(),
-                quick_reply=quick_reply.quick_reply
+                contents=flex_message.command_list(today),
+                quick_reply=quick_reply.quick_reply()
             )
         )
-    if event.message.text == '不查了':
+    if event.message.text == '不查了' or event.message.text == '不看了':
         return line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage( text='好喔', quick_reply=quick_reply.quick_reply() )

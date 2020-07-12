@@ -1,6 +1,4 @@
-from datetime import timedelta,date
-
-today = date.today()
+from datetime import timedelta
 
 from linebot.models import (
     QuickReply,
