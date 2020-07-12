@@ -152,3 +152,62 @@ class crawlerPtt():
                         if referCompany:
                             print(messages)
                             self.messageDict[date][referCompany].append( messages )
+
+# 依照時間區間計算股票版公司情緒並除存在 redis 方便用戶查詢
+# 因為計算區間長所以會先回傳訊息以防使用體驗中斷
+class calPttSents():
+
+    def __init__( self, r, user_id ):
+        # r = redis
+        # 以時間區間為基準取出公司情緒資料，再存入 redis 裡讓用戶之後查看
+        # 從 redis 拿到的資料為 binary data，做 strptime 轉成 datetime 格式以取得 date range
+        datas = self.get_redis_datas( r, user_id )
+
+        # 把 datas 裡面所有的 array concat 在一起
+        res = self.concat_datas_array( datas )
+
+        # 把 時間區間內 所有留言情緒加總再除以留言總數，若沒有留言則給中間值 0.5
+        # 回傳結果為 { '2498': [0.25, 32], '3306': [0.89, 874]... } key 為股票代碼，value[0]為評價，value[1]為留言數
+        self.calculate_result( res )
+
+        r.set( user_id, json.dumps( res ) )
+
+        r.delete( 'end_date' )
+        r.delete( 'start_date' )
+
+    def get_redis_datas( self, r, user_id ):
+        r.delete( user_id )
+        # 以時間區間為基準取出公司情緒資料再存入 redis 裡，讓用戶之後查看
+        # 從 redis 拿到的資料為 binary data，做 strptime 轉成 datetime 格式以取得 date range
+        start_date = datetime.strptime( r.get( 'start_date' ).decode(), "%Y-%m-%d" )
+        end_date = datetime.strptime( r.get( 'end_date' ).decode(), "%Y-%m-%d" )
+        date_range = int( (end_date - start_date).days ) + 1
+        key_list = ['company-' + (end_date - timedelta( days = x )).strftime( "%Y-%m-%d" ) for x in
+                    range( date_range )]
+        datas = r.mget( key_list )
+        # print(datas)
+        return datas
+
+    def concat_datas_array( self, datas ):
+        # 把 datas 裡面所有的 array concat 在一起
+        res = { }
+        for data in datas:
+            if data:
+                dict = json.loads( data )
+                for key in dict:
+                    # print(key)
+                    if key in res:
+                        res[key] += dict[key]
+                    else:
+                        res[key] = dict[key]
+        # print(res)
+        return res
+
+    def calculate_result( self, res ):
+        # 把 時間區間內 所有留言情緒加總再除以留言總數，若沒有留言則給中間值 0.5
+        # 回傳結果為 { '2498': [0.25, 32], '3306': [0.89, 874]... } key 為股票代碼，value[0]為評價，value[1]為留言數
+        for key in res:
+            if res[key]:
+                res[key] = [sum( res[key] ) / len( res[key] ), len( res[key] )]
+            else:
+                res[key] = [0.5, 0]

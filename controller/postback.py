@@ -1,11 +1,11 @@
-from helper.util import get_user_context, update_user_context
-from view import quick_reply, flex_message
+from helper.ptt import calPttSents
+from helper.util import get_sorted_result
+from view import quick_reply
 from config import line_bot_api, redis_url
-from linebot.models import TextSendMessage, MessageAction, QuickReply, QuickReplyButton, FlexSendMessage,\
-    DatetimePickerAction, PostbackAction
-from datetime import datetime, date, timedelta
+from linebot.models import TextSendMessage, MessageAction, QuickReply, QuickReplyButton, DatetimePickerAction, PostbackAction
+from datetime import date, timedelta
 import redis
-import json
+
 
 def handle(event):
 
@@ -46,86 +46,27 @@ def handle(event):
             line_bot_api.reply_message(
                 event.reply_token,
                 TextSendMessage(
-                    text = '謝謝您的查詢，您查詢的時間區間為\n\n'+ r.get( 'start_date' ).decode() +'：'+ r.get( 'end_date' ).decode()+
+                    text = '謝謝您的查詢，您查詢的時間區間為\n\n' +
+                           r.get( 'start_date' ).decode() + '：' + r.get( 'end_date' ).decode() +
                            '\n\n查詢可能需要耗費幾秒鐘的時間，\n請記得點選 「查看結果」。',
-                    quick_reply=QuickReply(
-                        items=[
-                            QuickReplyButton(action=PostbackAction( label="查看結果", data=user_id )),
-                            QuickReplyButton(action=MessageAction(label="不看了", text="不看了")),
+                    quick_reply = QuickReply(
+                        items = [
+                            QuickReplyButton( action = PostbackAction( label = "查看結果", data = user_id ) ),
+                            QuickReplyButton( action = MessageAction( label = "不看了", text = "不看了" ) ),
                         ]
                     )
                 )
             )
-
-            r.delete( user_id )
-
-            # 以時間區間為基準取出公司情緒資料，再存入 redis 裡讓用戶之後查看
-            # 從 redis 拿到的資料為 binary data，做 strptime 轉成 datetime 格式以取得 date range
-            start_date = datetime.strptime( r.get( 'start_date' ).decode(), "%Y-%m-%d" )
-            end_date = datetime.strptime( r.get('end_date').decode(), "%Y-%m-%d" )
-            date_range = int((end_date-start_date).days)+1
-            key_list = ['company-'+( end_date - timedelta( days = x ) ).strftime( "%Y-%m-%d" ) for x in range( date_range )]
-
-
-            datas = r.mget( key_list )
-            # print(datas)
-
-            res = {}
-            for data in datas:
-                # TODO: 若剛好遇到晚上12點來搜尋當天資料，有可能還沒爬蟲，redis 沒有當天資料就會跳 error
-                if data:
-                    dict = json.loads( data )
-                    for key in dict:
-                        # print(key)
-                        if key in res:
-                            res[key] += dict[key]
-                        else:
-                            res[key] = dict[key]
-            # print(res)
-
-            # 把 時間區間內 所有留言情緒加總再除以留言總數，若沒有留言則給中間值 0.5
-            for key in res:
-                if res[key]:
-                    res[key] = [sum(res[key]) / len(res[key]), len(res[key])]
-                else:
-                    res[key] = [0.5, 0]
-
-            # print(res)
-            r.set( user_id, json.dumps(res) )
-
-            r.delete( 'end_date' )
-            r.delete( 'start_date' )
+            # 依照時間區間計算股票版公司情緒並除存在 redis 方便用戶查詢
+            calPttSents( r, user_id )
 
     # 如果 post 過來的是他的 user_id，那就顯示 redis 裡面保存給他的資料
     if event.postback.data == user_id:
         if r.get( user_id ):
 
-            result = json.loads(r.get( user_id ))
-
-            # 依照 value 來排序字典，篩選掉留言小於 20 的 item
-            result = {k: v for k, v in sorted(result.items(), key=lambda item: item[1][0]) if v[1] > 19}
-
-            print(result)
-
-            neg_name = list( result.keys() )[:3]
-            pos_name = list( result.keys() )[-3:]
-
+            # 依照 value 來排序字典，篩選掉留言小於 20 的結果
             # 回傳前後三個股版留言好感度統計與留言數，並只擷取小數點後兩位
-            neg_data = list( result.values() )[:3]
-            neg_data = [ ['%.2f' % elem[0],elem[1]] for elem in neg_data ]
-            pos_data = list( result.values() )[-3:]
-            pos_data = [['%.2f' % elem[0], elem[1]] for elem in pos_data]
-
-            with open( 'data/company_dict.json', 'r' ) as read_file:
-                dict_data = json.load( read_file )
-
-            print( dict_data[pos_name[0]][1] )
-            print( dict_data[pos_name[1]][1] )
-            print( dict_data[pos_name[2]][1] )
-
-            print( dict_data[neg_name[0]][1] )
-            print( dict_data[neg_name[1]][1] )
-            print( dict_data[neg_name[2]][1] )
+            dict_data, neg_data, neg_name, pos_data, pos_name = get_sorted_result( r, user_id )
 
             line_bot_api.reply_message(
                 event.reply_token,
@@ -165,7 +106,4 @@ def handle(event):
                 )
             )
 
-def daterange(date1, date2):
-    for n in range(int ((date2 - date1).days)+1):
-        return date1 + timedelta(n)
 
