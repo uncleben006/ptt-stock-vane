@@ -4,6 +4,7 @@ from config import line_bot_api, redis_url
 from linebot.models import TextSendMessage, FlexSendMessage
 import re
 import redis
+import json
 
 def handle(event):
     user_id = event.source.user_id
@@ -23,8 +24,12 @@ def handle(event):
             event.reply_token,
             TextSendMessage( text='好喔', quick_reply=quick_reply.quick_reply() )
         )
-    if re.search( "^風向(:+)(\d+)(-+)(\d+)(-+)(\d+)(:+)(\d+)(-+)(\d+)(-+)(\d+)", event.message.text ):
+    # 如果匹配 ^[自首隨意][:][數字][-][數字][-][數字][:][數字][-][數字][-][數字]$
+    # ^:自首必填，$:字尾必為數字
+    if re.search( "^([\s\S]+)(:+)(\d+)(-+)(\d+)(-+)(\d+)(:+)(\d+)(-+)(\d+)(-+)(\d+)$", event.message.text ):
+
         messages = event.message.text.split( ':' )
+        company = messages[0]
         start_date = messages[1]
         end_date = messages[2]
 
@@ -38,9 +43,22 @@ def handle(event):
                 quick_reply = quick_reply.get_result( user_id )
             )
         )
+
+        if company == '風向':
+            company = None
+        else:
+            with open( 'data/company_dict.json', 'r' ) as read_file:
+                dict_data = json.load( read_file )
+
+            for company_refers in dict_data.items():
+                if company in company_refers[1]:
+                    company = company_refers[0]
+
+        # print(company)
+
         # 依照時間區間計算股票版公司情緒並除存在 redis 方便用戶查詢
         r = redis.from_url( redis_url )
-        calPttSents( r, user_id, start_date, end_date )
+        calPttSents( r, user_id, start_date, end_date, company )
         return
 
 
@@ -49,6 +67,6 @@ def handle(event):
         FlexSendMessage(
             alt_text='Dummy message',
             contents=flex_message.default_message(),
-            quick_reply=quick_reply.quick_reply
+            quick_reply=quick_reply.quick_reply()
         )
     )

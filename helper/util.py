@@ -87,10 +87,9 @@ def get_company_comment():
 
     return result
 
+# TODO: 思考一下是否要改成 "把評分乘上 總留言比例，以代表整體比例"
+def get_sorted_result( result ):
 
-def get_sorted_result( r, user_id ):
-    # r = redis
-    result = json.loads( r.get( user_id ) )
     # 依照 value 來排序字典，篩選掉留言小於 20 的 item
     result = { k:v for k, v in sorted( result.items(), key = lambda item:item[1][0] ) if v[1] > 19 }
     neg_name = list( result.keys() )[:3]
@@ -100,6 +99,5 @@ def get_sorted_result( r, user_id ):
     neg_data = [['%.2f' % elem[0], elem[1]] for elem in neg_data]
     pos_data = list( result.values() )[-3:]
     pos_data = [['%.2f' % elem[0], elem[1]] for elem in pos_data]
-    with open( 'data/company_dict.json', 'r' ) as read_file:
-        dict_data = json.load( read_file )
-    return dict_data, neg_data, neg_name, pos_data, pos_name
+
+    return neg_data, neg_name, pos_data, pos_name

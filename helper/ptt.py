@@ -163,6 +163,7 @@ class calPttSents():
 
         self.start_date = start_date
         self.end_date = end_date
+        self.company = company
 
         # 以時間區間為基準取出公司情緒資料，再存入 redis 裡讓用戶之後查看
         # 從 redis 拿到的資料為 binary data，做 strptime 轉成 datetime 格式以取得 date range
@@ -190,25 +191,25 @@ class calPttSents():
         # print(datas)
         return datas
 
-    def concat_datas_array( self, datas, company=None ):
+    def concat_datas_array( self, datas ):
         # 把 datas 裡面所有的 array concat 在一起
         res = { }
-        if company:
-            res[company] = []
+        if self.company:
+            res[self.company] = []
         for data in datas:
             if data:
                 dict = json.loads( data )
                 for key in dict:
                     # print(key)
-                    if company:
-                        if key == company:
+                    if self.company:
+                        if key == self.company:
                             res[key] += dict[key]
                     else:
                         if key in res:
                             res[key] += dict[key]
                         else:
                             res[key] = dict[key]
-        # print(res)
+        print(res)
         return res
 
     def calculate_result( self, res ):

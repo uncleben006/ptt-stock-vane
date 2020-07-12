@@ -5,6 +5,7 @@ from config import line_bot_api, redis_url
 from linebot.models import TextSendMessage
 from datetime import date
 import redis
+import json
 
 from view.quick_reply import search_date
 
@@ -57,9 +58,34 @@ def handle(event):
     if event.postback.data == user_id:
         if r.get( user_id ):
 
+            with open( 'data/company_dict.json', 'r' ) as read_file:
+                dict_data = json.load( read_file )
+
+            result = json.loads( r.get( user_id ) )
+
+            # 若用戶只查一個公司，就回覆一個公司的情緒分析
+            if len(result.keys()) == 1:
+                print(result)
+                company_id = list(result.keys())[0]
+                company_name = dict_data[company_id][1]
+                sentiment = '%.2f' % list(result.values())[0][0]
+                comment = list(result.values())[0][1]
+                return line_bot_api.reply_message(
+                    event.reply_token,
+                    [
+                        # TODO: 用 Flex message 取代
+                        TextSendMessage(
+                            text = '謝謝您的查詢，以下是您的搜尋結果。\n'+ company_name + ' '+ company_id +
+                                   '\n好感度：' + str(sentiment) +
+                                   '\n留言數：' + str(comment),
+                            quick_reply = quick_reply.quick_reply()
+                        )
+                    ]
+                )
+
             # 依照 value 來排序字典，篩選掉留言小於 20 的結果
             # 回傳前後三個股版留言好感度統計與留言數，並只擷取小數點後兩位
-            dict_data, neg_data, neg_name, pos_data, pos_name = get_sorted_result( r, user_id )
+            neg_data, neg_name, pos_data, pos_name = get_sorted_result( result )
 
             line_bot_api.reply_message(
                 event.reply_token,
