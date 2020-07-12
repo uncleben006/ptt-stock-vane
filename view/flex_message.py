@@ -172,7 +172,7 @@ def command_list():
                     "size": "sm",
                     "color": "#555555",
                     "flex": 0,
-                    "text": "台機電:2020-06-30:2020-07:30",
+                    "text": "台機電:2020-06-30:2020-07-30",
                     "margin": "md"
                   },
                   {
@@ -180,7 +180,7 @@ def command_list():
                     "size": "sm",
                     "color": "#555555",
                     "flex": 0,
-                    "text": "2330:2020-06-30:2020-07:30",
+                    "text": "2330:2020-06-30:2020-07-30",
                     "margin": "md"
                   },
                   {
@@ -188,7 +188,7 @@ def command_list():
                     "action": {
                       "type": "message",
                       "label": "查看公司評論",
-                      "text": "台機電:2020-06-30:2020-07:30"
+                      "text": "台機電:2020-06-30:2020-07-30"
                     },
                     "style": "secondary",
                     "margin": "md",
@@ -229,7 +229,7 @@ def command_list():
                     "size": "sm",
                     "color": "#555555",
                     "flex": 0,
-                    "text": "風向:2020-06-30:2020-07:30",
+                    "text": "風向:2020-06-30:2020-07-30",
                     "margin": "md"
                   },
                   {
@@ -237,7 +237,7 @@ def command_list():
                     "action": {
                       "type": "message",
                       "label": "了解版內風向",
-                      "text": "風向:2020-06-30:2020-07:30"
+                      "text": "風向:2020-06-30:2020-07-30"
                     },
                     "style": "secondary",
                     "margin": "md",
@@ -278,7 +278,7 @@ def command_list():
                     "size": "sm",
                     "color": "#555555",
                     "flex": 0,
-                    "text": "Sunrisesky:2020-06-30:2020-07:30",
+                    "text": "Sunrisesky:2020-06-30:2020-07-30",
                     "margin": "md"
                   },
                   {
@@ -286,7 +286,7 @@ def command_list():
                     "action": {
                       "type": "message",
                       "label": "查看作者評論",
-                      "text": "Sunrisesky:2020-06-30:2020-07:30"
+                      "text": "Sunrisesky:2020-06-30:2020-07-30"
                     },
                     "style": "secondary",
                     "margin": "md",
@@ -327,7 +327,7 @@ def command_list():
                     "size": "sm",
                     "color": "#555555",
                     "flex": 0,
-                    "text": "標的作者:2020-06-30:2020-07:30",
+                    "text": "標的作者:2020-06-30:2020-07-30",
                     "margin": "md"
                   },
                   {
@@ -335,7 +335,7 @@ def command_list():
                     "action": {
                       "type": "message",
                       "label": "分析作者報酬率",
-                      "text": "標的作者:2020-06-30:2020-07:30"
+                      "text": "標的作者:2020-06-30:2020-07-30"
                     },
                     "style": "secondary",
                     "margin": "md",

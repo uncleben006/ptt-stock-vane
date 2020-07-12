@@ -157,8 +157,13 @@ class crawlerPtt():
 # 因為計算區間長所以會先回傳訊息以防使用體驗中斷
 class calPttSents():
 
-    def __init__( self, r, user_id ):
+    # 如果這個 class 有傳進股票代碼，就不要 concat 所有 datas array，只保留該股票代碼的就好
+    def __init__( self, r, user_id, start_date, end_date , company=None ):
         # r = redis
+
+        self.start_date = start_date
+        self.end_date = end_date
+
         # 以時間區間為基準取出公司情緒資料，再存入 redis 裡讓用戶之後查看
         # 從 redis 拿到的資料為 binary data，做 strptime 轉成 datetime 格式以取得 date range
         datas = self.get_redis_datas( r, user_id )
@@ -172,15 +177,12 @@ class calPttSents():
 
         r.set( user_id, json.dumps( res ) )
 
-        r.delete( 'end_date' )
-        r.delete( 'start_date' )
-
     def get_redis_datas( self, r, user_id ):
         r.delete( user_id )
         # 以時間區間為基準取出公司情緒資料再存入 redis 裡，讓用戶之後查看
         # 從 redis 拿到的資料為 binary data，做 strptime 轉成 datetime 格式以取得 date range
-        start_date = datetime.strptime( r.get( 'start_date' ).decode(), "%Y-%m-%d" )
-        end_date = datetime.strptime( r.get( 'end_date' ).decode(), "%Y-%m-%d" )
+        start_date = datetime.strptime( self.start_date, "%Y-%m-%d" )
+        end_date = datetime.strptime( self.end_date, "%Y-%m-%d" )
         date_range = int( (end_date - start_date).days ) + 1
         key_list = ['company-' + (end_date - timedelta( days = x )).strftime( "%Y-%m-%d" ) for x in
                     range( date_range )]
@@ -188,18 +190,24 @@ class calPttSents():
         # print(datas)
         return datas
 
-    def concat_datas_array( self, datas ):
+    def concat_datas_array( self, datas, company=None ):
         # 把 datas 裡面所有的 array concat 在一起
         res = { }
+        if company:
+            res[company] = []
         for data in datas:
             if data:
                 dict = json.loads( data )
                 for key in dict:
                     # print(key)
-                    if key in res:
-                        res[key] += dict[key]
+                    if company:
+                        if key == company:
+                            res[key] += dict[key]
                     else:
-                        res[key] = dict[key]
+                        if key in res:
+                            res[key] += dict[key]
+                        else:
+                            res[key] = dict[key]
         # print(res)
         return res
 

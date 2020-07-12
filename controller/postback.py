@@ -58,7 +58,9 @@ def handle(event):
                 )
             )
             # 依照時間區間計算股票版公司情緒並除存在 redis 方便用戶查詢
-            calPttSents( r, user_id )
+            calPttSents( r, user_id, r.get( 'start_date' ).decode(), r.get( 'end_date' ).decode() )
+            r.delete( 'end_date' )
+            r.delete( 'start_date' )
 
     # 如果 post 過來的是他的 user_id，那就顯示 redis 裡面保存給他的資料
     if event.postback.data == user_id:
