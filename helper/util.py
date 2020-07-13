@@ -87,6 +87,36 @@ def get_company_comment():
 
     return result
 
+def get_comment(start_date, end_date, company=None):
+
+    conn = psycopg2.connect( database_url, sslmode = 'require' )
+    cursor = conn.cursor()
+
+    sql = "SELECT * FROM company_comment WHERE datetime BETWEEN '"+start_date+"' AND '"+end_date+"'";
+    print(sql)
+
+    cursor.execute( sql )
+    query_result = cursor.fetchall()
+
+    # query_result = json.loads('"'+query_result[0]+'"')
+
+    cursor.close()
+    conn.close()
+
+    if company:
+        final_result = []
+        for datas in query_result:
+            datetime = datas[0]
+            comments = datas[1]
+            data = [datetime,{company:comments[company]}]
+            final_result.append(data)
+            # print(final_result)
+    else:
+
+        final_result = query_result
+
+    return final_result
+
 # TODO: 思考一下是否要改成 "把評分乘上 總留言比例，以代表整體比例"
 def get_sorted_result( result ):
 

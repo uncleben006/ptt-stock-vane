@@ -3,7 +3,7 @@
 from controller import follow, postback, message, cron
 from datetime import datetime
 
-from flask import Flask, request, abort
+from flask import Flask, request, abort, render_template
 
 from linebot.exceptions import (
     InvalidSignatureError
@@ -16,6 +16,7 @@ from linebot.models import (
 )
 
 from config import handler
+from helper.util import get_comment
 
 app = Flask(__name__)
 
@@ -30,6 +31,19 @@ def cron_job():
     print('start a cron job.')
     cron.job()
     return '<h1>You have finished the cron job successfully</h1>'
+
+@app.route('/comments', methods=['GET'])
+def company_comments():
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    company = request.args.get('company')
+
+    if start_date and end_date:
+        result = get_comment(start_date, end_date, company)
+    else:
+        return "請輸入時間區間"
+
+    return render_template( "comments.html", result=result )
 
 @app.route("/callback", methods=['POST'])
 def callback():
