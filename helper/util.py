@@ -57,7 +57,7 @@ def update_user_context( name, data, profile ):
     cursor.close()
     conn.close()
 
-def upsert_company_comment( delete_sql, insert_sql ):
+def upsert_table( delete_sql, insert_sql ):
 
     conn = psycopg2.connect( database_url, sslmode = 'require' )
     cursor = conn.cursor()

@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 import json
+import re
 
 class crawlerPtt():
 
@@ -220,3 +221,126 @@ class calPttSents():
                 res[key] = [sum( res[key] ) / len( res[key] ), len( res[key] )]
             else:
                 res[key] = [0.5, 0]
+
+
+class crawlOpinionLeader():
+
+    def __init__( self, url, date_limit ):
+
+        with open( 'data/company_dict.json', 'r' ) as read_file:
+            self.dict_data = json.load( read_file )
+
+        self.url = url
+        self.datas = []
+
+        today = datetime.today() + timedelta( days = 1 )
+        # today = datetime.today() + timedelta( days = 1 ) - timedelta( days = 196 )
+        self.crawl_start = today - timedelta( days = date_limit )
+        self.crawl_start = self.crawl_start.strftime( "%Y-%m-%d" )
+        date_list = [(today - timedelta( days = x )).strftime( "%Y-%m-%d" ) for x in range( date_limit + 1 )]
+
+        print( date_list )
+
+        # 抓取首頁
+        self.get_all_href( url = self.url )
+
+        # 往前幾頁 抓取所有標題網址
+        while True:
+            try:
+                r = requests.get( self.url )
+                soup = BeautifulSoup( r.text, "html.parser" )
+                btn = soup.select( 'div.btn-group > a' )
+                up_page_href = btn[3]['href']
+                next_page_url = 'https://www.ptt.cc' + up_page_href
+                self.url = next_page_url
+                judge = self.get_all_href( url = self.url )
+                if judge == False:
+                    break
+            except Exception as e:
+                print( e )
+                continue
+
+        # 透過標題網址self.datas抓取留言 並儲存到self.messageDict 最後再存下來 (邊抓邊存會漏掉很多留言)
+        self.crawlerArticle()
+
+    # 抓取標題網址，並將 title, url, date 存至 self.datas
+    def get_all_href( self, url ):
+        r = requests.get( url )
+        soup = BeautifulSoup( r.text, "html.parser" )
+
+        # 抓取文章區塊
+        results = soup.select( "div.r-ent" )
+        for item in results:
+            a_item = item.select_one( "div.title" ).select_one( "a" )
+            title = item.select_one( "div.title" ).text.replace( '\n', '' ).strip()
+            date = item.select_one( "div.meta" ).select_one( "div.date" ).text
+            author = item.select_one( "div.meta" ).select_one( "div.author" ).text
+
+            if title.find( "Re: " ) == -1:
+                # 把 date 變成 "%Y-%m-%d"
+                date = self.format_datetime( date )
+                # 爬到 crawl_start 就停止
+                print( 'date', date )
+                print( 'crawl_start', self.crawl_start )
+                if str( date ) <= str( self.crawl_start ):
+                    return False
+
+                if a_item:
+                    url = 'https://www.ptt.cc' + a_item.get( 'href' )
+                    print(url)
+                    self.datas.append( [url, author, title, date] )
+
+    # 對 ptt 抓到的時間做字串處理，因為其格式與 datetime 不相符
+    def format_datetime( self, date ):
+        if len( date.strip() ) < 5:
+            date = '2020/0' + date.strip()
+        else:
+            date = '2020/' + date.strip()
+        date = datetime.strptime( date, "%Y/%m/%d" ).strftime( "%Y-%m-%d" )
+        return date
+
+    # 從標題網址分析留言
+    def crawlerArticle( self ):
+
+        for num in range( len( self.datas ) ):
+
+            try:
+                response = requests.get( self.datas[num][0] )
+
+            except Exception as e:
+                print(e)
+                continue
+
+            self.datas[num] = self.datas[num] + ['', '']
+
+            soup = BeautifulSoup( response.text, 'html.parser' )
+            article = soup.find( id = 'main-content' )
+            if not article:
+                continue
+
+            for div in article.select( 'div' ):
+                div.extract()
+            for span in article.select( 'span' ):
+                span.extract()
+
+            print( 'url ', self.datas[num][0] )
+            print( 'author ', self.datas[num][1] )
+            print( 'title ', self.datas[num][2] )
+            print( 'date ', self.datas[num][3] )
+
+            for line in article.text.split( '\n' ):
+
+                # 找到 標的
+                if re.search( "標的:|標的：", line ):
+                    line = line.replace( ":", "：" )
+                    print( line.split( '：' )[1].strip() )
+                    self.datas[num][4] = line.split( '：' )[1].strip()
+
+                # 找到 分類
+                if re.search( "分類:|分類：", line ):
+                    line = line.replace( ":", "：" )
+                    print( line.split( '：' )[1].strip() )
+                    self.datas[num][5] = line.split( '：' )[1].strip()
+
+            print(self.datas[num])
+            print()
