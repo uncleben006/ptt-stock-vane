@@ -13,7 +13,7 @@ def quick_reply():
         items=[
             # QuickReplyButton(action=DatetimePickerAction( label="快速查詢風向", data="stock_company_list", mode="date", initial=str(today), max=str(today), min=str(today - timedelta(days=30)) ) ),
             QuickReplyButton(action=PostbackAction( label="快速查詢風向", data="stock_company_list" ) ),
-            QuickReplyButton(action=PostbackAction(label="意見領袖報酬率", text="stock_company_list")),
+            QuickReplyButton(action=PostbackAction( label="意見領袖報酬率", data="opinion_leader_list") ),
             QuickReplyButton(action=MessageAction(label="指令", text='指令')),
         ]
     )
@@ -52,4 +52,21 @@ def search_date( today ):
                 text = "不查了"
             ) ),
         ]
+    )
+
+def query_date( query_date,user_id ):
+    items = []
+    for date in query_date:
+        print(date)
+        items.append(
+            QuickReplyButton(
+                action = PostbackAction(
+                    label = str(date)+" 天", data = "action=opinion_leader&date="+str(date)+"&user_id="+user_id+""
+                )
+            ) ),
+
+    items.append( QuickReplyButton( action = MessageAction( label = "不查了", text = "不查了" ) ) )
+
+    return QuickReply(
+        items = items
     )

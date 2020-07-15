@@ -69,13 +69,11 @@ def upsert_table( delete_sql, insert_sql ):
     cursor.close()
     conn.close()
 
-def get_company_comment():
+def select_table(sql):
 
     conn = psycopg2.connect( database_url, sslmode = 'require' )
     cursor = conn.cursor()
 
-    # sql = "SELECT * FROM company_comment WHERE datetime BETWEEN '2020-07-05' AND '2020-07-07'";
-    sql = "SELECT * FROM company_comment";
     print(sql)
 
     cursor.execute( sql )

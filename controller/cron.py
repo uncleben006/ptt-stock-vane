@@ -1,5 +1,5 @@
 from helper.ptt import crawlerPtt, crawlOpinionLeader
-from helper.util import upsert_table, get_company_comment
+from helper.util import upsert_table, select_table
 from config import redis_url
 import json
 import redis
@@ -34,7 +34,8 @@ def company_comments():
     # 那用戶若要選取一個時間區間，就會把這些陣列裡面的情緒量化數字加總再除以總數量
     # 得到 "這段時間區間，鄉民對公司所有留言的平均情緒"
     # 藉以得知 "選取的時間區間，鄉民對公司的情緒反應，並顯示給 line 用戶"
-    result = get_company_comment()
+    sql = "SELECT * FROM company_comment";
+    result = select_table(sql)
     for data in result:
         datetime = data[0].strftime( "%Y-%m-%d" )
         # print(datetime)
@@ -69,6 +70,11 @@ def opinion_leaders():
     insert_sql = "INSERT INTO opinion_leader ( url, author, title, date, target, class ) VALUES" + values
     delete_sql = "DELETE FROM opinion_leader WHERE date BETWEEN '"+today+"'AND'"+today+"';"
     upsert_table( delete_sql, insert_sql )
+
+    sql = "SELECT url,author,title,TO_CHAR(date, 'YYYY-MM-DD'),target,class FROM opinion_leader";
+    result = select_table( sql )
+    r = redis.from_url( redis_url )
+    r.set( "opinion_leader", json.dumps( result, ensure_ascii = False ) )
 
 def get_comment_sentiments( comments ):
     global s
