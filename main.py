@@ -1,6 +1,6 @@
 
 
-from controller import follow, postback, message, cron
+from controller import follow, postback, message, cron, image
 from datetime import datetime
 
 from flask import Flask, request, abort, render_template
@@ -12,7 +12,8 @@ from linebot.models import (
     MessageEvent,
     FollowEvent,
     PostbackEvent,
-    TextMessage
+    TextMessage,
+    ImageMessage
 )
 
 from config import handler
@@ -70,6 +71,10 @@ def callback():
 @handler.add( MessageEvent, message=TextMessage )
 def handle_message(event):
     message.handle(event)
+
+@handler.add( MessageEvent, message=ImageMessage )
+def handle_image_message(event):
+    image.handle(event)
 
 @handler.add( FollowEvent )
 def handle_follow(event):
