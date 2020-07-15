@@ -109,13 +109,13 @@ def handle(event):
                 [
                     TextSendMessage(
                         text = '謝謝您的查詢，以下是您的搜尋結果。\n系統會自動替除掉留言少於20的結果\n\n鄉民觀感最好的三間公司：\n' +
-                        dict_data[pos_name[0]][1] + '  好感度:' + str(pos_data[2][0]) + '  留言數：' + str(pos_data[2][1]) + '\n' +
+                        dict_data[pos_name[2]][1] + '  好感度:' + str(pos_data[2][0]) + '  留言數：' + str(pos_data[2][1]) + '\n' +
                         dict_data[pos_name[1]][1] + '  好感度:' + str(pos_data[1][0]) + '  留言數：' + str(pos_data[1][1]) + '\n' +
-                        dict_data[pos_name[2]][1] + '  好感度:' + str(pos_data[0][0]) + '  留言數：' + str(pos_data[0][1]) + '\n\n' +
+                        dict_data[pos_name[0]][1] + '  好感度:' + str(pos_data[0][0]) + '  留言數：' + str(pos_data[0][1]) + '\n\n' +
                         '鄉民觀感最差的公司：\n' +
-                        dict_data[neg_name[0]][1] + '  好感度:' + str(neg_data[2][0]) + '  留言數：' + str(neg_data[2][1]) + '\n' +
+                        dict_data[neg_name[2]][1] + '  好感度:' + str(neg_data[2][0]) + '  留言數：' + str(neg_data[2][1]) + '\n' +
                         dict_data[neg_name[1]][1] + '  好感度:' + str(neg_data[1][0]) + '  留言數：' + str(neg_data[1][1]) + '\n' +
-                        dict_data[neg_name[2]][1] + '  好感度:' + str(neg_data[0][0]) + '  留言數：' + str(neg_data[0][1]) + '\n',
+                        dict_data[neg_name[0]][1] + '  好感度:' + str(neg_data[0][0]) + '  留言數：' + str(neg_data[0][1]) + '\n',
                         quick_reply = quick_reply.quick_reply()
                     ),
                     # TODO: 用小輪播顯示三個綠色好公司，三個紅色壞公司，若要查看公司留言，則導入 flask 網站

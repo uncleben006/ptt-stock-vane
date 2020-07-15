@@ -120,6 +120,7 @@ def get_sorted_result( result ):
 
     # 依照 value 來排序字典，篩選掉留言小於 20 的 item
     result = { k:v for k, v in sorted( result.items(), key = lambda item:item[1][0] ) if v[1] > 19 }
+    print(result)
     neg_name = list( result.keys() )[:3]
     pos_name = list( result.keys() )[-3:]
     # 回傳前後三個股版留言好感度統計與留言數，並只擷取小數點後兩位
