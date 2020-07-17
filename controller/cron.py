@@ -57,24 +57,27 @@ def company_comments():
 def opinion_leaders():
     # 爬取 [標的]
     url = 'https://www.ptt.cc/bbs/Stock/search?q=%5B%E6%A8%99%E7%9A%84%5D'
-    date_limit = 1
+    date_limit = 2
     today = date.today() - timedelta( days = 1 )
+    end_day = today + timedelta( days = 2 )
     today = today.strftime( "%Y-%m-%d" )
+    end_day = end_day.strftime( "%Y-%m-%d" )
 
     opinion = crawlOpinionLeader( url, date_limit )
     print( opinion.datas )
     values = ''
     for data in opinion.datas:
         values = values + "('"+data[0]+"','"+data[1]+"','"+data[2]+"','"+data[3]+"','"+data[4]+"','"+data[5]+"'),"
-    values = values[:-1]
-    insert_sql = "INSERT INTO opinion_leader ( url, author, title, date, target, class ) VALUES" + values
-    delete_sql = "DELETE FROM opinion_leader WHERE date BETWEEN '"+today+"'AND'"+today+"';"
-    upsert_table( delete_sql, insert_sql )
+    if values:
+        values = values[:-1]
+        insert_sql = "INSERT INTO opinion_leader ( url, author, title, date, target, class ) VALUES" + values
+        delete_sql = "DELETE FROM opinion_leader WHERE date BETWEEN '"+today+"'AND'"+end_day+"';"
+        upsert_table( delete_sql, insert_sql )
 
-    sql = "SELECT url,author,title,TO_CHAR(date, 'YYYY-MM-DD'),target,class FROM opinion_leader";
-    result = select_table( sql )
-    r = redis.from_url( redis_url )
-    r.set( "opinion_leader", json.dumps( result, ensure_ascii = False ) )
+        sql = "SELECT url,author,title,TO_CHAR(date, 'YYYY-MM-DD'),target,class FROM opinion_leader";
+        result = select_table( sql )
+        r = redis.from_url( redis_url )
+        r.set( "opinion_leader", json.dumps( result, ensure_ascii = False ) )
 
 def get_comment_sentiments( comments ):
     global s
