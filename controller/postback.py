@@ -1,11 +1,13 @@
 from helper.ptt import calPttSents
 from helper.util import get_sorted_result
-from view import quick_reply
+from view import quick_reply, flex_message
 from config import line_bot_api, redis_url
-from linebot.models import TextSendMessage
+from linebot.models import TextSendMessage, FlexSendMessage
 from datetime import date
 import redis
 import json
+import re
+import query_string
 
 from view.quick_reply import search_date, query_date
 
@@ -18,25 +20,40 @@ def handle(event):
 
     today = date.today ()
 
-    if event.postback.data == 'opinion_leader_list':
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(
-                text = '請輸入時間',
-                quick_reply = query_date( [3,5,10,30,90],user_id )
-            )
-        )
+    # if re.search( "^action=opinion_leader", event.postback.data ):
+    #     post_data = query_string.parse(event.postback.data)
+    #     print(post_data)
+
+    # if event.postback.data == 'opinion_leader_list':
+    #     line_bot_api.reply_message(
+    #         event.reply_token,
+    #         TextSendMessage(
+    #             text = '請輸入時間',
+    #             quick_reply = query_date( [6,12,30,60],user_id )
+    #         )
+    #     )
         # 若 user 查詢意見領袖投資報酬率時，詢問 user 要依照多久時間為指標各個作者的投資報酬率
         # select (company_name,date) from opinion_leader 會回傳一個 list with company_id and date
         # 用這個 list 去 query 出 company_price => select company_id from company_price where date = (date + user_insert_date)
         # 上面這個 query 會跑 3000 多個，勢必會對使用者體驗造成負擔，所以也要做二段訊息讓資訊緩衝，先把 query 結果存在 redis
         # user 點選查看結果後才會回傳真正的結果
         # 若 user 查詢某特定 id 的
-        # 3 5 10 30 90
 
+    if event.postback.data == 'company_comment_list':
+        r.delete('select')
+        r.set('select', 'comment')
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(
+                text='請輸入時間',
+                quick_reply= search_date( today )
+            )
+        )
 
     # 查詢自那天起的股市留言歸納出前後三名公司，做成 Flex message 送給用戶
-    if event.postback.data == 'stock_company_list':
+    if event.postback.data == 'company_sentiment_list':
+        r.delete( 'select' )
+        r.set( 'select', 'sentiment' )
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(
@@ -56,18 +73,29 @@ def handle(event):
 
         if r.get( 'start_date' ) and r.get( 'end_date' ):
 
-            # 先回傳訊息，避免使用者體驗中斷
-            line_bot_api.reply_message(
-                event.reply_token,
-                TextSendMessage(
-                    text = '謝謝您的查詢，您查詢的時間區間為\n\n' +
-                           r.get( 'start_date' ).decode() + '：' + r.get( 'end_date' ).decode() +
-                           '\n\n查詢可能需要耗費幾秒鐘的時間，\n請記得點選 「查看結果」。',
-                    quick_reply = quick_reply.get_result( user_id )
+            if r.get('select').decode() == 'comment':
+                line_bot_api.reply_message(
+                    event.reply_token,
+                    FlexSendMessage(
+                        alt_text = '前往查看公司評論',
+                        contents = flex_message.company_comment( r.get( 'start_date' ).decode(), r.get( 'end_date' ).decode() ),
+                        quick_reply = quick_reply.quick_reply()
+                    )
                 )
-            )
-            # 依照時間區間計算股票版公司情緒並除存在 redis 方便用戶查詢
-            calPttSents( r, user_id, r.get( 'start_date' ).decode(), r.get( 'end_date' ).decode() )
+            else:
+                line_bot_api.reply_message(
+                    event.reply_token,
+                    TextSendMessage(
+                        text = '謝謝您的查詢，您查詢的時間區間為\n\n' +
+                               r.get( 'start_date' ).decode() + '：' + r.get( 'end_date' ).decode() +
+                               '\n\n查詢可能需要耗費幾秒鐘的時間，\n請記得點選 「查看結果」。',
+                        quick_reply = quick_reply.get_result( user_id )
+                    )
+                )
+                if r.get('select').decode() == 'sentiment':
+                    # 依照時間區間計算股票版公司情緒並除存在 redis 方便用戶查詢
+                    calPttSents( r, user_id, r.get( 'start_date' ).decode(), r.get( 'end_date' ).decode() )
+
             r.delete( 'end_date' )
             r.delete( 'start_date' )
 

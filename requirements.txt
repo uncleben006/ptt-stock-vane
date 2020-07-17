@@ -7,3 +7,4 @@ psycopg2
 psycopg2-binary
 snownlp
 bs4
+query_string

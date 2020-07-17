@@ -5,15 +5,15 @@ from linebot.models import (
     QuickReplyButton,
     MessageAction,
     PostbackAction,
-    DatetimePickerAction
+    DatetimePickerAction, URIAction
 )
 
 def quick_reply():
     return QuickReply(
         items=[
             # QuickReplyButton(action=DatetimePickerAction( label="快速查詢風向", data="stock_company_list", mode="date", initial=str(today), max=str(today), min=str(today - timedelta(days=30)) ) ),
-            QuickReplyButton(action=PostbackAction( label="快速查詢風向", data="stock_company_list" ) ),
-            QuickReplyButton(action=PostbackAction( label="意見領袖報酬率", data="opinion_leader_list") ),
+            QuickReplyButton(action=PostbackAction( label="快速查詢風向", data="company_sentiment_list" ) ),
+            QuickReplyButton(action=PostbackAction( label="快速查詢留言", data="company_comment_list") ),
             QuickReplyButton(action=MessageAction(label="指令", text='指令')),
         ]
     )
@@ -26,7 +26,6 @@ def get_result( user_id ):
             QuickReplyButton( action = MessageAction( label = "不看了", text = "不看了" ) ),
         ]
     )
-
 
 def search_date( today ):
     return QuickReply(

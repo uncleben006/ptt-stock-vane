@@ -69,6 +69,15 @@ def upsert_table( delete_sql, insert_sql ):
     cursor.close()
     conn.close()
 
+def insert_table( insert_sql ):
+
+    conn = psycopg2.connect( database_url, sslmode = 'require' )
+    cursor = conn.cursor()
+    cursor.execute( insert_sql )
+    conn.commit()
+    cursor.close()
+    conn.close()
+
 def select_table(sql):
 
     conn = psycopg2.connect( database_url, sslmode = 'require' )

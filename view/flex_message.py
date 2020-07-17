@@ -190,7 +190,7 @@ def command_list( today ):
                     "action": {
                       "type": "message",
                       "label": "查看公司評價",
-                      "text": "台機電:"+ ( today - timedelta( days = 2 )).strftime( "%Y-%m-%d" ) +":"+ today.strftime( "%Y-%m-%d" ) +"",
+                      "text": "台積電:"+ ( today - timedelta( days = 2 )).strftime( "%Y-%m-%d" ) +":"+ today.strftime( "%Y-%m-%d" ) +"",
                     },
                     "style": "secondary",
                     "margin": "md",
@@ -540,4 +540,63 @@ def company_list():
         ],
         "flex": 0
       }
+    }
+
+def company_comment(start_date,end_date):
+    return {
+        "type":"carousel",
+        "contents":[
+            {
+                "type":"bubble",
+                "size":"nano",
+                "header":{
+                    "type":"box",
+                    "layout":"vertical",
+                    "contents":[
+                        {
+                            "type":"text",
+                            "text":"查看留言",
+                            "color":"#e4f9ff",
+                            "align":"center",
+                            "size":"md",
+                            "gravity":"center"
+                        }
+                    ],
+                    "backgroundColor":"#383e56",
+                    "paddingTop":"19px",
+                    "paddingAll":"12px",
+                    "paddingBottom":"16px"
+                },
+                "body":{
+                    "type":"box",
+                    "layout":"vertical",
+                    "contents":[
+                        {
+                            "type":"box",
+                            "layout":"horizontal",
+                            "contents":[
+                                {
+                                    "type":"button",
+                                    "action":{
+                                        "type":"uri",
+                                        "label":"前往網站",
+                                        "uri":"https://ptt-stock-vane.herokuapp.com/comments?start_date="+start_date+"&end_date="+end_date+"&company="
+                                    },
+                                    "style":"secondary",
+                                    "color":"#a394804d"
+                                }
+                            ],
+                            "flex":1
+                        }
+                    ],
+                    "spacing":"md",
+                    "paddingAll":"12px"
+                },
+                "styles":{
+                    "footer":{
+                        "separator":False
+                    }
+                }
+            }
+        ]
     }
