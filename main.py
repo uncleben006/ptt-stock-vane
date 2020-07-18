@@ -1,4 +1,4 @@
-
+import json
 
 from controller import follow, postback, message, cron, image
 from datetime import datetime
@@ -39,12 +39,15 @@ def company_comments():
     end_date = request.args.get('end_date')
     company = request.args.get('company')
 
+    with open( 'data/company_dict.json', 'r' ) as read_file:
+        dict_data = json.load( read_file )
+
     if start_date and end_date:
         result = get_comment(start_date, end_date, company)
     else:
         return "請輸入時間區間"
 
-    return render_template( "comments.html", result=result )
+    return render_template( "comments.html", result=result, dict_data=dict_data )
 
 @app.route("/callback", methods=['POST'])
 def callback():

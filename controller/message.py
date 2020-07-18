@@ -66,9 +66,8 @@ def handle(event):
 
     line_bot_api.reply_message(
         event.reply_token,
-        FlexSendMessage(
-            alt_text='Dummy message',
-            contents=flex_message.default_message(),
-            quick_reply=quick_reply.quick_reply()
+        TextSendMessage(
+            text = '請輸入正確指令以查詢資訊，若不清楚可以點選「指令」查詢有什麼指令可以使用',
+            quick_reply = quick_reply.quick_reply()
         )
     )

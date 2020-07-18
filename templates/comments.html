@@ -22,7 +22,7 @@
                         <li class="list-group-item list-group-item-primary" id="{{ datas[0].strftime( "%Y-%m-%d" ) }}" >{{ datas[0].strftime( "%Y-%m-%d" ) }}</li>
                         {% for data in datas[1].items() %}
                             {% if data[1] %}
-                                <li class="list-group-item list-group-item-info">{{ data[0] }}</li>
+                                <li class="list-group-item list-group-item-info">{{ dict_data[data[0]][1] }} ({{ data[0] }})</li>
                                 {% for comment in data[1] %}
                                     <li class="list-group-item comment">{{ comment }}</li>
                                 {% endfor %}
