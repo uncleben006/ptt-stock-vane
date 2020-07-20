@@ -79,6 +79,7 @@ def handle(event):
                     [
                         TextSendMessage(
                             text = "感謝您的查詢，點選以下網址查看留言\n https://ptt-stock-vane.herokuapp.com/comments?start_date="+r.get( 'start_date' ).decode()+"&end_date="+r.get( 'end_date' ).decode()+"&company=",
+                            quick_reply = quick_reply.quick_reply()
                         )
                         # FlexSendMessage(
                         #     alt_text = '前往查看公司評論',
