@@ -163,7 +163,7 @@ def command_list( today ):
                   },
                   {
                     "type": "text",
-                    "text": "公司:起始日期:結束日期",
+                    "text": "評價_公司:起始日期:結束日期",
                     "size": "sm",
                     "color": "#555555",
                     "margin": "md",
@@ -174,7 +174,7 @@ def command_list( today ):
                     "size": "sm",
                     "color": "#555555",
                     "flex": 0,
-                    "text": "台積電:"+ ( today - timedelta( days = 2 )).strftime( "%Y-%m-%d" ) +":"+ today.strftime( "%Y-%m-%d" ) +"",
+                    "text": "評價_台積電:"+ ( today - timedelta( days = 2 )).strftime( "%Y-%m-%d" ) +":"+ today.strftime( "%Y-%m-%d" ) +"",
                     "margin": "md"
                   },
                   {
@@ -182,7 +182,7 @@ def command_list( today ):
                     "size": "sm",
                     "color": "#555555",
                     "flex": 0,
-                    "text": "2330:"+ ( today - timedelta( days = 2 )).strftime( "%Y-%m-%d" ) +":"+ today.strftime( "%Y-%m-%d" ) +"",
+                    "text": "評價_2330:"+ ( today - timedelta( days = 2 )).strftime( "%Y-%m-%d" ) +":"+ today.strftime( "%Y-%m-%d" ) +"",
                     "margin": "md"
                   },
                   {
@@ -190,7 +190,7 @@ def command_list( today ):
                     "action": {
                       "type": "message",
                       "label": "查看公司評價",
-                      "text": "台積電:"+ ( today - timedelta( days = 2 )).strftime( "%Y-%m-%d" ) +":"+ today.strftime( "%Y-%m-%d" ) +"",
+                      "text": "評價_台積電:"+ ( today - timedelta( days = 2 )).strftime( "%Y-%m-%d" ) +":"+ today.strftime( "%Y-%m-%d" ) +"",
                     },
                     "style": "secondary",
                     "margin": "md",
@@ -259,7 +259,7 @@ def command_list( today ):
                 "contents": [
                   {
                     "type": "text",
-                    "text": "說明：查詢意見領袖( 標的文作者 )評論",
+                    "text": "說明：查詢單間公司的留言",
                     "margin": "md",
                     "size": "sm",
                     "color": "#555555",
@@ -268,7 +268,7 @@ def command_list( today ):
                   },
                   {
                     "type": "text",
-                    "text": "ID:起始日期:結束日期",
+                    "text": "留言_公司:起始日期:結束日期",
                     "size": "sm",
                     "color": "#555555",
                     "flex": 0,
@@ -280,15 +280,15 @@ def command_list( today ):
                     "size": "sm",
                     "color": "#555555",
                     "flex": 0,
-                    "text": "Sunrisesky:"+ ( today - timedelta( days = 2 )).strftime( "%Y-%m-%d" ) +":"+ today.strftime( "%Y-%m-%d" ) +"",
+                    "text": "留言_台積電:"+ ( today - timedelta( days = 2 )).strftime( "%Y-%m-%d" ) +":"+ today.strftime( "%Y-%m-%d" ) +"",
                     "margin": "md"
                   },
                   {
                     "type": "button",
                     "action": {
                       "type": "message",
-                      "label": "查看作者評論",
-                      "text": "Sunrisesky:"+ ( today - timedelta( days = 2 )).strftime( "%Y-%m-%d" ) +":"+ today.strftime( "%Y-%m-%d" ) +""
+                      "label": "查看公司留言",
+                      "text": "留言_台積電:"+ ( today - timedelta( days = 2 )).strftime( "%Y-%m-%d" ) +":"+ today.strftime( "%Y-%m-%d" ) +""
                     },
                     "style": "secondary",
                     "margin": "md",
@@ -299,16 +299,12 @@ def command_list( today ):
                 "margin": "xxl"
               },
               {
-                "type": "separator",
-                "margin": "xxl"
-              },
-              {
                 "type": "box",
                 "layout": "vertical",
                 "contents": [
                   {
                     "type": "text",
-                    "text": "說明：查詢時段內所有意見領袖，依時間區段計算其投資報酬率",
+                    "text": "說明：查詢時段內所有留言",
                     "margin": "md",
                     "size": "sm",
                     "color": "#555555",
@@ -317,7 +313,7 @@ def command_list( today ):
                   },
                   {
                     "type": "text",
-                    "text": "標的作者:起始日期:結束日期",
+                    "text": "留言:起始日期:結束日期",
                     "size": "sm",
                     "color": "#555555",
                     "flex": 0,
@@ -329,15 +325,15 @@ def command_list( today ):
                     "size": "sm",
                     "color": "#555555",
                     "flex": 0,
-                    "text": "標的作者:"+ ( today - timedelta( days = 2 )).strftime( "%Y-%m-%d" ) +":"+ today.strftime( "%Y-%m-%d" ) +"",
+                    "text": "留言:"+ ( today - timedelta( days = 2 )).strftime( "%Y-%m-%d" ) +":"+ today.strftime( "%Y-%m-%d" ) +"",
                     "margin": "md"
                   },
                   {
                     "type": "button",
                     "action": {
                       "type": "message",
-                      "label": "分析作者報酬率",
-                      "text": "標的作者:"+ ( today - timedelta( days = 2 )).strftime( "%Y-%m-%d" ) +":"+ today.strftime( "%Y-%m-%d" ) +""
+                      "label": "查看所有留言",
+                      "text": "留言:"+ ( today - timedelta( days = 2 )).strftime( "%Y-%m-%d" ) +":"+ today.strftime( "%Y-%m-%d" ) +""
                     },
                     "style": "secondary",
                     "margin": "md",
@@ -542,61 +538,78 @@ def company_list():
       }
     }
 
-def company_comment(start_date,end_date):
-    return {
-        "type":"carousel",
-        "contents":[
+def company_comment(start_date,end_date,company=''):
+
+        return {
+          "type": "carousel",
+          "contents": [
             {
-                "type":"bubble",
-                "size":"nano",
-                "header":{
-                    "type":"box",
-                    "layout":"vertical",
-                    "contents":[
-                        {
-                            "type":"text",
-                            "text":"查看留言",
-                            "color":"#e4f9ff",
-                            "align":"center",
-                            "size":"md",
-                            "gravity":"center"
-                        }
+              "type": "bubble",
+              "size": "nano",
+              "header": {
+                "type": "box",
+                "layout": "vertical",
+                "contents": [
+                  {
+                    "type": "text",
+                    "text": "查看留言",
+                    "color": "#e4f9ff",
+                    "align": "center",
+                    "size": "md",
+                    "gravity": "center"
+                  },
+                  {
+                    "type": "text",
+                    "text": start_date,
+                    "color": "#e4f9ff",
+                    "align": "center",
+                    "size": "xs",
+                    "gravity": "center",
+                    "margin": "sm"
+                  },
+                  {
+                    "type": "text",
+                    "text": end_date,
+                    "color": "#e4f9ff",
+                    "align": "center",
+                    "size": "xs",
+                    "gravity": "center",
+                    "margin": "none"
+                  }
+                ],
+                "backgroundColor": "#383e56",
+                "paddingAll": "12px"
+              },
+              "body": {
+                "type": "box",
+                "layout": "vertical",
+                "contents": [
+                  {
+                    "type": "box",
+                    "layout": "horizontal",
+                    "contents": [
+                      {
+                        "type": "button",
+                        "action": {
+                          "type": "uri",
+                          "label": "前往網站",
+                          "uri": "https://ptt-stock-vane.herokuapp.com/comments?start_date="+start_date+"&end_date="+end_date+"&company="+company
+                        },
+                        "style": "secondary",
+                        "color": "#a394804d"
+                      }
                     ],
-                    "backgroundColor":"#383e56",
-                    "paddingTop":"19px",
-                    "paddingAll":"12px",
-                    "paddingBottom":"16px"
-                },
-                "body":{
-                    "type":"box",
-                    "layout":"vertical",
-                    "contents":[
-                        {
-                            "type":"box",
-                            "layout":"horizontal",
-                            "contents":[
-                                {
-                                    "type":"button",
-                                    "action":{
-                                        "type":"uri",
-                                        "label":"前往網站",
-                                        "uri":"https://ptt-stock-vane.herokuapp.com/comments?start_date="+start_date+"&end_date="+end_date+"&company="
-                                    },
-                                    "style":"secondary",
-                                    "color":"#a394804d"
-                                }
-                            ],
-                            "flex":1
-                        }
-                    ],
-                    "spacing":"md",
-                    "paddingAll":"12px"
-                },
-                "styles":{
-                    "footer":{
-                        "separator":False
-                    }
+                    "flex": 1
+                  }
+                ],
+                "spacing": "md",
+                "paddingAll": "12px"
+              },
+              "styles": {
+                "footer": {
+                  "separator": False
                 }
+              }
             }
-        ]
-    }
+          ]
+        }
