@@ -32,7 +32,7 @@
   <h3 align="center">ptt-stock-vane</h3>
 
   <p align="center">
-    一個會告訴你股票版有哪些反指標的聊天機器人
+    一個會告訴你 PTT 股票版鄉民都在想什麼的聊天機器人
     <br />
     <br />
     <a href="#"><strong>View Demo »</strong></a>
