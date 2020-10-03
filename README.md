@@ -35,7 +35,8 @@
     一個會告訴你 PTT 股票版鄉民都在想什麼的聊天機器人
     <br />
     <br />
-    <a href="#"><strong>View Demo »</strong></a>
+    <strong>Play on linebot</strong>
+    <p align="center"><img src="images/qrcode.png" alt="Logo" width="80" height="80"></p>
     <br />
   </p>
 </p>
