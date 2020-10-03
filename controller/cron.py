@@ -1,4 +1,4 @@
-from helper.ptt import crawlerPtt, crawlOpinionLeader
+from helper.ptt import CrawlerPtt, CrawlOpinionLeader
 from helper.util import upsert_table, select_table
 from config import redis_url
 import json
@@ -18,7 +18,7 @@ def company_comments():
     # 實例化爬蟲 輸入爬取看板
     url = 'https://www.ptt.cc/bbs/Stock/index.html'
     date_limit = 30
-    stock = crawlerPtt( url, date_limit )
+    stock = CrawlerPtt( url, date_limit )
     # 爬取完成，顯示出所有留言字典
     print( stock.messageDict )
     values = ''
@@ -63,7 +63,7 @@ def opinion_leaders():
     today = today.strftime( "%Y-%m-%d" )
     end_day = end_day.strftime( "%Y-%m-%d" )
 
-    opinion = crawlOpinionLeader( url, date_limit )
+    opinion = CrawlOpinionLeader( url, date_limit )
     print( opinion.datas )
     values = ''
     for data in opinion.datas:

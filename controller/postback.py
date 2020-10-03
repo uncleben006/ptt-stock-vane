@@ -1,4 +1,4 @@
-from helper.ptt import calPttSents
+from helper.ptt import CalPttSents
 from helper.util import get_sorted_result
 from view import quick_reply, flex_message
 from config import line_bot_api, redis_url
@@ -100,7 +100,7 @@ def handle(event):
                 )
                 if r.get('select').decode() == 'sentiment':
                     # 依照時間區間計算股票版公司情緒並除存在 redis 方便用戶查詢
-                    calPttSents( r, user_id, r.get( 'start_date' ).decode(), r.get( 'end_date' ).decode() )
+                    CalPttSents( r, user_id, r.get( 'start_date' ).decode(), r.get( 'end_date' ).decode() )
 
             r.delete( 'end_date' )
             r.delete( 'start_date' )
